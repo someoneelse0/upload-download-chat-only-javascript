@@ -12,14 +12,37 @@ const s=multer.diskStorage({
 const up=multer({
 	storage:s
 });
-express.set(cors());
+express.use(cors());
 express.get("/",(req,res)=>{
 	res.sendFile(__dirname+"/index.html");
 });
+let userzero="";
+let userone="";
+let d="";
+let dd="";
+let aa="";
 io.on("connection",(s)=>{
 	console.log(s.id+" is now connected");
 	s.on("f",(d)=>{
-		io.sockets.emit("f",d);
+		userzero!=""?userone=d.username:userzero=d.username;
+		if(userzero==userone){
+			d="<p class='one'>"+userzero+": "+d.message+"</p>";
+			io.sockets.emit("f",d);
+		}else{
+			d="<p class='two'>"+userone+": "+d.message+"</p>";
+			io.sockets.emit("f",d);
+		}
+	});
+	s.on("ff",(d)=>{
+		aa=d.file.split("\\")[2];
+		userzero!=""?userone=d.usern:userzero=d.usern;
+		if(userzero==userone){
+			dd="<li class='one'>"+userzero+"\'s file: "+`<a href=download/${aa}>`+aa+"</a>"+"</li>";
+			io.sockets.emit("ff",dd);
+		}else{
+			dd="<li class='two'>"+userone+"\'s file: "+`<a href=download/${aa}>`+aa+"</a>"+"</li>";
+			io.sockets.emit("ff",dd);
+		}
 	});
 	s.on("disconnect",(req,res)=>{
 		console.log(s.id+" has been gone");
